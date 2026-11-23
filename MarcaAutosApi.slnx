@@ -5,4 +5,7 @@
     <Project Path="src/MarcaAutos.Domain/MarcaAutos.Domain.csproj" />
     <Project Path="src/MarcaAutos.Infrastructure/MarcaAutos.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/MarcaAutos.Tests/MarcaAutos.Tests.csproj" />
+  </Folder>
 </Solution>
