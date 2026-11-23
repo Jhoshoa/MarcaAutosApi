@@ -16,6 +16,20 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: marcas_autos_api
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=postgres_db;Port=5432;Database=MarcasAutosDb;Username=postgres;Password=postgres_password"
+    ports:
+      - "8080:8080"
+
 volumes:
   postgres_data:
-  
