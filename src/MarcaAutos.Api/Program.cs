@@ -22,6 +22,12 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // Apply pending migrations in Development before serving requests, including migration-based seed data.
+    await using (var scope = app.Services.CreateAsyncScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await dbContext.Database.MigrateAsync();
+    }
     app.UseSwagger();
     app.UseSwaggerUI();
 }
