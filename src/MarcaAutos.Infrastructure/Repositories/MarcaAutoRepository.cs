@@ -30,13 +30,11 @@ namespace MarcaAutos.Infrastructure.Repositories
             return request;
         }
 
-        public async Task<MarcaAuto> GetById(int id, CancellationToken cancellationToken)
+        public async Task<MarcaAuto?> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var data = await _context
+            return await _context
                 .MarcaAuto.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-
-            return data ?? throw new KeyNotFoundException($"MarcaAuto with ID {id} was not found.");
         }
     }
 }

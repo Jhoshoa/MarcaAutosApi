@@ -3,16 +3,17 @@ using System.ComponentModel.DataAnnotations;
 namespace MarcaAutos.Api.Validations.Attributes
 {
     [AttributeUsage(
-        AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter
+        AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter,
+        AllowMultiple = false
     )]
-    public class GreaterThanAttribute : ValidationAttribute
+    public sealed class GreaterThanAttribute : ValidationAttribute
     {
         private readonly int _minValue;
 
         public GreaterThanAttribute(int minValue)
         {
             _minValue = minValue;
-            ErrorMessage = $"{{0}} must be greater that {minValue}.";
+            ErrorMessage = $"{{0}} must be greater than {minValue}.";
         }
 
         public override bool IsValid(object? value)

@@ -1,13 +1,19 @@
-using MarcaAutos.Domain;
+using MarcaAutos.Application.Models;
 
 namespace MarcaAutos.Application.Interfaces
 {
     public interface IMarcaAutoService
     {
-        Task<IEnumerable<MarcaAuto>> ObtenerTodasLasMarcasAsync(
+        Task<IReadOnlyList<MarcaAutoResult>> ObtenerTodasLasMarcasAsync(
             CancellationToken cancellationToken
         );
-        Task<MarcaAuto> CrearMarcaAutoAsync(MarcaAuto request, CancellationToken cancellationToken);
-        Task<MarcaAuto> ObtenerMarcaAutoPorId(int id, CancellationToken cancellationToken);
+        Task<MarcaAutoResult> CrearMarcaAutoAsync(
+            CreateMarcaAutoCommand command,
+            CancellationToken cancellationToken
+        );
+        Task<MarcaAutoResult?> ObtenerMarcaAutoPorIdAsync(
+            int id,
+            CancellationToken cancellationToken
+        );
     }
 }

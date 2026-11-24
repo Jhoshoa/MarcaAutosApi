@@ -1,12 +1,12 @@
 using MarcaAutos.Api.Dtos;
 using MarcaAutos.Application.Interfaces;
-using MarcaAutos.Domain;
+using MarcaAutos.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarcaAutos.Api.Controllers
 {
     /// <summary>
-    /// Provides read-only operations for vehicle brands.
+    /// Provides operations for vehicle brands.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -48,57 +48,63 @@ namespace MarcaAutos.Api.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(MarcaAutoResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MarcaAutoResponse>> Create(
             [FromBody] CreateMarcaAutoRequest request,
             CancellationToken cancellationToken
         )
         {
-            var marcaAuto = new MarcaAuto
-            {
-                Name = request.Name,
-                CountryOrigin = request.CountryOrigin,
-                FoundedYear = request.FoundedYear,
-            };
-
-            var responseData = await _marcaAutoService.CrearMarcaAutoAsync(
-                marcaAuto,
-                cancellationToken
+            var command = new CreateMarcaAutoCommand(
+                request.Name,
+                request.CountryOrigin,
+                request.FoundedYear
             );
+            var result = await _marcaAutoService.CrearMarcaAutoAsync(command, cancellationToken);
 
             var response = new MarcaAutoResponse(
-                responseData.Id,
-                responseData.Name,
-                responseData.CountryOrigin,
-                responseData.FoundedYear
+                result.Id,
+                result.Name,
+                result.CountryOrigin,
+                result.FoundedYear
             );
 
-            return StatusCode(StatusCodes.Status201Created, response);
+            return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
         }
 
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(MarcaAutoResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<MarcaAutoResponse>> GetById(
             int id,
             CancellationToken cancellationToken
         )
         {
-            try
-            {
-                var response = await _marcaAutoService.ObtenerMarcaAutoPorId(id, cancellationToken);
+            var result = await _marcaAutoService.ObtenerMarcaAutoPorIdAsync(id, cancellationToken);
 
-                var data = new MarcaAutoResponse(
-                    response.Id,
-                    response.Name,
-                    response.CountryOrigin,
-                    response.FoundedYear
-                );
-
-                return Ok(data);
-            }
-            catch (Exception error)
+            if (result is null)
             {
-                return StatusCode(StatusCodes.Status404NotFound, error.Message);
+                // return Problem(
+                //     statusCode: StatusCodes.Status404NotFound,
+                //     title: "Marca de auto no encontrada",
+                //     detail: $"No se encontró una marca de auto con el ID {id}.",
+                //     instance: HttpContext.Request.Path
+                // );
+
+                //return NotFound($"Not found the marca auto with that {id}.");
+
+                return NotFound();
             }
+
+            var response = new MarcaAutoResponse(
+                result.Id,
+                result.Name,
+                result.CountryOrigin,
+                result.FoundedYear
+            );
+
+            return Ok(response);
         }
     }
 }

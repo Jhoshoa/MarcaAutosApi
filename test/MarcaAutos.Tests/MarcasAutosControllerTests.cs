@@ -4,6 +4,7 @@ using MarcaAutos.Application.Services;
 using MarcaAutos.Domain;
 using MarcaAutos.Infrastructure.Persistence;
 using MarcaAutos.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -76,6 +77,67 @@ namespace MarcaAutos.Tests
 
             Assert.Equal(5, marcas.Count);
             Assert.Contains(marcas, m => m.Name == "Mazda");
+        }
+
+        [Fact]
+        public async Task GetById_WhenBrandExists_ShouldReturnOkWithBrandResponse()
+        {
+            await using var context = GetInMemoryDbContext();
+            var repository = new MarcaAutoRepository(context);
+            var service = new MarcaAutoService(repository);
+            var controller = new MarcasAutosController(service);
+
+            var result = await controller.GetById(1, CancellationToken.None);
+
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var marca = Assert.IsType<MarcaAutoResponse>(okResult.Value);
+            Assert.Equal(1, marca.Id);
+            Assert.Equal("Toyota", marca.Name);
+        }
+
+        [Fact]
+        public async Task GetById_WhenBrandDoesNotExist_ShouldReturnNotFoundProblemDetails()
+        {
+            await using var context = GetInMemoryDbContext();
+            var repository = new MarcaAutoRepository(context);
+            var service = new MarcaAutoService(repository);
+            var controller = new MarcasAutosController(service);
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext(),
+            };
+
+            var result = await controller.GetById(999, CancellationToken.None);
+
+            var notFoundResult = Assert.IsType<ObjectResult>(result.Result);
+            var problem = Assert.IsType<ProblemDetails>(notFoundResult.Value);
+            Assert.Equal(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+            Assert.Equal(StatusCodes.Status404NotFound, problem.Status);
+            Assert.Equal("Marca de auto no encontrada", problem.Title);
+        }
+
+        [Fact]
+        public async Task Create_ShouldReturnCreatedAtGetByIdWithGeneratedId()
+        {
+            await using var context = GetInMemoryDbContext();
+            var repository = new MarcaAutoRepository(context);
+            var service = new MarcaAutoService(repository);
+            var controller = new MarcasAutosController(service);
+            var request = new CreateMarcaAutoRequest
+            {
+                Name = "Mazda",
+                CountryOrigin = "Japón",
+                FoundedYear = 1920,
+            };
+
+            var result = await controller.Create(request, CancellationToken.None);
+
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+            var response = Assert.IsType<MarcaAutoResponse>(createdResult.Value);
+            Assert.Equal(nameof(MarcasAutosController.GetById), createdResult.ActionName);
+            Assert.Equal(response.Id, createdResult.RouteValues!["id"]);
+            Assert.Equal("Mazda", response.Name);
+            Assert.NotEqual(0, response.Id);
         }
     }
 }
