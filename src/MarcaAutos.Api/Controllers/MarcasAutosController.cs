@@ -74,5 +74,31 @@ namespace MarcaAutos.Api.Controllers
 
             return StatusCode(StatusCodes.Status201Created, response);
         }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<MarcaAutoResponse>> GetById(
+            int id,
+            CancellationToken cancellationToken
+        )
+        {
+            try
+            {
+                var response = await _marcaAutoService.ObtenerMarcaAutoPorId(id, cancellationToken);
+
+                var data = new MarcaAutoResponse(
+                    response.Id,
+                    response.Name,
+                    response.CountryOrigin,
+                    response.FoundedYear
+                );
+
+                return Ok(data);
+            }
+            catch (Exception error)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, error.Message);
+            }
+        }
     }
 }

@@ -8,5 +8,6 @@ namespace MarcaAutos.Application.Interfaces
             CancellationToken cancellationToken
         );
         Task<MarcaAuto> CrearMarcaAutoAsync(MarcaAuto request, CancellationToken cancellationToken);
+        Task<MarcaAuto> ObtenerMarcaAutoPorId(int id, CancellationToken cancellationToken);
     }
 }

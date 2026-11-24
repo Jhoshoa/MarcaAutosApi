@@ -26,5 +26,13 @@ namespace MarcaAutos.Application.Services
         {
             return await _repository.CreateAsync(request, cancellationToken);
         }
+
+        public async Task<MarcaAuto> ObtenerMarcaAutoPorId(
+            int id,
+            CancellationToken cancellationToken
+        )
+        {
+            return await _repository.GetById(id, cancellationToken);
+        }
     }
 }
