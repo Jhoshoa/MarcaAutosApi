@@ -1,5 +1,5 @@
 using MarcaAutos.Application.Interfaces;
-using MarcaAutos.Domain;
+using MarcaAutos.Api.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarcaAutos.Api.Controllers
@@ -30,11 +30,18 @@ namespace MarcaAutos.Api.Controllers
         /// </remarks>
         /// <returns>An HTTP 200 response containing the vehicle brands.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<MarcasAutos>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<MarcasAutos>>> GetAll()
+        [ProducesResponseType(typeof(IEnumerable<MarcaAutoResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<MarcaAutoResponse>>> GetAll()
         {
             var marcasAutos = await _marcaAutoService.ObtenerTodasLasMarcasAsync();
-            return Ok(marcasAutos);
+            var response = marcasAutos
+                .Select(marca => new MarcaAutoResponse(
+                    marca.Id,
+                    marca.Name,
+                    marca.CountryOrigin,
+                    marca.FoundedYear));
+
+            return Ok(response);
         }
     }
 }

@@ -1,4 +1,5 @@
 using MarcaAutos.Api.Controllers;
+using MarcaAutos.Api.Dtos;
 using MarcaAutos.Application.Services;
 using MarcaAutos.Domain;
 using MarcaAutos.Infrastructure.Persistence;
@@ -35,7 +36,7 @@ namespace MarcaAutos.Tests
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var marcas = Assert.IsAssignableFrom<IEnumerable<MarcasAutos>>(okResult.Value).ToList();
+            var marcas = Assert.IsAssignableFrom<IEnumerable<MarcaAutoResponse>>(okResult.Value).ToList();
 
             Assert.Equal(4, marcas.Count);
             Assert.Contains(marcas, m => m.Name == "Toyota" && m.CountryOrigin == "Japon");
@@ -65,7 +66,7 @@ namespace MarcaAutos.Tests
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var marcas = Assert.IsAssignableFrom<IEnumerable<MarcasAutos>>(okResult.Value).ToList();
+            var marcas = Assert.IsAssignableFrom<IEnumerable<MarcaAutoResponse>>(okResult.Value).ToList();
 
             Assert.Equal(5, marcas.Count);
             Assert.Contains(marcas, m => m.Name == "Mazda");
