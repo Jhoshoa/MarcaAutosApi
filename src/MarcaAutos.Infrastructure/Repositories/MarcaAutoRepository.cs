@@ -14,9 +14,9 @@ namespace MarcaAutos.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<MarcasAutos>> GetAllAsync()
+        public async Task<IEnumerable<MarcaAuto>> GetAllAsync()
         {
-            return await _context.MarcasAutos.AsNoTracking().ToListAsync();
+            return await _context.MarcaAuto.AsNoTracking().ToListAsync();
         }
     }
 }

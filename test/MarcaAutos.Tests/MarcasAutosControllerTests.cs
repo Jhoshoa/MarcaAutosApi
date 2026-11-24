@@ -48,7 +48,7 @@ namespace MarcaAutos.Tests
         {
             // Arrange
             await using var context = GetInMemoryDbContext();
-            context.MarcasAutos.Add(new MarcasAutos
+            context.MarcaAuto.Add(new MarcaAuto
             {
                 Id = 5,
                 Name = "Mazda",

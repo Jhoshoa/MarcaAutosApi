@@ -11,7 +11,7 @@ namespace MarcaAutos.Application.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<MarcasAutos>> ObtenerTodasLasMarcasAsync()
+        public async Task<IEnumerable<MarcaAuto>> ObtenerTodasLasMarcasAsync()
         {
             return await _repository.GetAllAsync();
         }

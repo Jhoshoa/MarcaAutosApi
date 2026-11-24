@@ -62,10 +62,13 @@ dotnet test test/MarcaAutos.Tests/MarcaAutos.Tests.csproj
 Collect Cobertura coverage with Coverlet:
 
 ```bash
+rm -rf test/MarcaAutos.Tests/TestResults coveragereport
 dotnet test test/MarcaAutos.Tests/MarcaAutos.Tests.csproj --collect:"XPlat Code Coverage"
 ```
 
-The report is written under `test/MarcaAutos.Tests/TestResults/`. The repository's `coverlet.runsettings` excludes generated EF Core migrations and `Program` from coverage. No minimum coverage percentage is currently enforced.
+The Cobertura report is written under `test/MarcaAutos.Tests/TestResults/`. The
+repository's `coverlet.runsettings` excludes generated EF Core migrations and
+`Program` from coverage. No minimum coverage percentage is currently enforced.
 
 To generate an HTML report, install ReportGenerator once:
 
@@ -73,7 +76,7 @@ To generate an HTML report, install ReportGenerator once:
 dotnet tool install --global dotnet-reportgenerator-globaltool
 ```
 
-Then run:
+Then run this from the repository root:
 
 ```bash
 reportgenerator \
