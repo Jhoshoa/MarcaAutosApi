@@ -2,15 +2,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MarcaAutos.Api.Validations.Attributes
 {
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter)]
-    public class GreatherThan : ValidationAttribute
+    [AttributeUsage(
+        AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter
+    )]
+    public class GreaterThanAttribute : ValidationAttribute
     {
         private readonly int _minValue;
-        
-        public GreatherThan(int minValue)
+
+        public GreaterThanAttribute(int minValue)
         {
             _minValue = minValue;
-            ErrorMessage = $"{{0}} must be greather that {minValue}.";
+            ErrorMessage = $"{{0}} must be greater that {minValue}.";
         }
 
         public override bool IsValid(object? value)
@@ -19,7 +21,7 @@ namespace MarcaAutos.Api.Validations.Attributes
             {
                 return true;
             }
-            
+
             return value is int number && number > _minValue;
         }
     }

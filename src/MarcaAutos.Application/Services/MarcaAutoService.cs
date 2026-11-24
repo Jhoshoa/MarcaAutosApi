@@ -6,19 +6,25 @@ namespace MarcaAutos.Application.Services
     public class MarcaAutoService : IMarcaAutoService
     {
         private readonly IMarcaAutoRepository _repository;
+
         public MarcaAutoService(IMarcaAutoRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<IEnumerable<MarcaAuto>> ObtenerTodasLasMarcasAsync()
+        public async Task<IEnumerable<MarcaAuto>> ObtenerTodasLasMarcasAsync(
+            CancellationToken cancellationToken
+        )
         {
-            return await _repository.GetAllAsync();
+            return await _repository.GetAllAsync(cancellationToken);
         }
 
-        public async Task<MarcaAuto> CrearMarcaAutoAsync(MarcaAuto request)
+        public async Task<MarcaAuto> CrearMarcaAutoAsync(
+            MarcaAuto request,
+            CancellationToken cancellationToken
+        )
         {
-            return await _repository.CreateAsync(request);
+            return await _repository.CreateAsync(request, cancellationToken);
         }
     }
 }

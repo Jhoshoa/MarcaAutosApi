@@ -4,7 +4,9 @@ namespace MarcaAutos.Application.Interfaces
 {
     public interface IMarcaAutoService
     {
-        Task<IEnumerable<MarcaAuto>> ObtenerTodasLasMarcasAsync();
-        Task<MarcaAuto> CrearMarcaAutoAsync(MarcaAuto request);
+        Task<IEnumerable<MarcaAuto>> ObtenerTodasLasMarcasAsync(
+            CancellationToken cancellationToken
+        );
+        Task<MarcaAuto> CrearMarcaAutoAsync(MarcaAuto request, CancellationToken cancellationToken);
     }
 }

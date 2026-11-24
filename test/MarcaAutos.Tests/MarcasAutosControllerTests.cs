@@ -32,11 +32,13 @@ namespace MarcaAutos.Tests
             var controller = new MarcasAutosController(service);
 
             // Act
-            var result = await controller.GetAll();
+            var result = await controller.GetAll(CancellationToken.None);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var marcas = Assert.IsAssignableFrom<IEnumerable<MarcaAutoResponse>>(okResult.Value).ToList();
+            var marcas = Assert
+                .IsAssignableFrom<IEnumerable<MarcaAutoResponse>>(okResult.Value)
+                .ToList();
 
             Assert.Equal(4, marcas.Count);
             Assert.Contains(marcas, m => m.Name == "Toyota" && m.CountryOrigin == "Japon");
@@ -48,13 +50,15 @@ namespace MarcaAutos.Tests
         {
             // Arrange
             await using var context = GetInMemoryDbContext();
-            context.MarcaAuto.Add(new MarcaAuto
-            {
-                Id = 5,
-                Name = "Mazda",
-                CountryOrigin = "Japón",
-                FoundedYear = 1920
-            });
+            context.MarcaAuto.Add(
+                new MarcaAuto
+                {
+                    Id = 5,
+                    Name = "Mazda",
+                    CountryOrigin = "Japón",
+                    FoundedYear = 1920,
+                }
+            );
             await context.SaveChangesAsync();
 
             var repository = new MarcaAutoRepository(context);
@@ -62,11 +66,13 @@ namespace MarcaAutos.Tests
             var controller = new MarcasAutosController(service);
 
             // Act
-            var result = await controller.GetAll();
+            var result = await controller.GetAll(CancellationToken.None);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var marcas = Assert.IsAssignableFrom<IEnumerable<MarcaAutoResponse>>(okResult.Value).ToList();
+            var marcas = Assert
+                .IsAssignableFrom<IEnumerable<MarcaAutoResponse>>(okResult.Value)
+                .ToList();
 
             Assert.Equal(5, marcas.Count);
             Assert.Contains(marcas, m => m.Name == "Mazda");

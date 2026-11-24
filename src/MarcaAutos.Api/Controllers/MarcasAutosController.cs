@@ -1,7 +1,7 @@
-using MarcaAutos.Application.Interfaces;
 using MarcaAutos.Api.Dtos;
-using Microsoft.AspNetCore.Mvc;
+using MarcaAutos.Application.Interfaces;
 using MarcaAutos.Domain;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MarcaAutos.Api.Controllers
 {
@@ -20,7 +20,7 @@ namespace MarcaAutos.Api.Controllers
         /// <param name="marcaAutoService">The service used to retrieve vehicle brands.</param>
         public MarcasAutosController(IMarcaAutoService marcaAutoService)
         {
-            _marcaAutoService = marcaAutoService;            
+            _marcaAutoService = marcaAutoService;
         }
 
         /// <summary>
@@ -32,37 +32,47 @@ namespace MarcaAutos.Api.Controllers
         /// <returns>An HTTP 200 response containing the vehicle brands.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<MarcaAutoResponse>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<MarcaAutoResponse>>> GetAll()
+        public async Task<ActionResult<IEnumerable<MarcaAutoResponse>>> GetAll(
+            CancellationToken cancellationToken
+        )
         {
-            var marcasAutos = await _marcaAutoService.ObtenerTodasLasMarcasAsync();
-            var response = marcasAutos
-                .Select(marca => new MarcaAutoResponse(
-                    marca.Id,
-                    marca.Name,
-                    marca.CountryOrigin,
-                    marca.FoundedYear));
+            var marcasAutos = await _marcaAutoService.ObtenerTodasLasMarcasAsync(cancellationToken);
+            var response = marcasAutos.Select(marca => new MarcaAutoResponse(
+                marca.Id,
+                marca.Name,
+                marca.CountryOrigin,
+                marca.FoundedYear
+            ));
 
             return Ok(response);
         }
 
         [HttpPost]
-        public async Task<ActionResult<MarcaAutoResponse>> Create([FromBody] CreateMarcaAutoRequest request)
+        public async Task<ActionResult<MarcaAutoResponse>> Create(
+            [FromBody] CreateMarcaAutoRequest request,
+            CancellationToken cancellationToken
+        )
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            
             var marcaAuto = new MarcaAuto
             {
                 Name = request.Name,
                 CountryOrigin = request.CountryOrigin,
-                FoundedYear = request.FoundedYear
+                FoundedYear = request.FoundedYear,
             };
 
-            var data = await _marcaAutoService.CrearMarcaAutoAsync(marcaAuto);
+            var responseData = await _marcaAutoService.CrearMarcaAutoAsync(
+                marcaAuto,
+                cancellationToken
+            );
 
-            return StatusCode(StatusCodes.Status201Created, data);
+            var response = new MarcaAutoResponse(
+                responseData.Id,
+                responseData.Name,
+                responseData.CountryOrigin,
+                responseData.FoundedYear
+            );
+
+            return StatusCode(StatusCodes.Status201Created, response);
         }
     }
 }

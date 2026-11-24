@@ -7,11 +7,13 @@ namespace MarcaAutos.Api.Dtos
     {
         [Required]
         [MaxLength(100)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+
         [Required]
         [MaxLength(100)]
-        public string CountryOrigin { get; set; }
-        [GreatherThan(1900)]
+        public string CountryOrigin { get; set; } = string.Empty;
+
+        [GreaterThan(1900)]
         public int FoundedYear { get; set; }
     }
 }

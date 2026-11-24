@@ -14,15 +14,18 @@ namespace MarcaAutos.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<MarcaAuto>> GetAllAsync()
+        public async Task<IEnumerable<MarcaAuto>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.MarcaAuto.AsNoTracking().ToListAsync();
+            return await _context.MarcaAuto.AsNoTracking().ToListAsync(cancellationToken);
         }
 
-        public async Task<MarcaAuto> CreateAsync(MarcaAuto request)
+        public async Task<MarcaAuto> CreateAsync(
+            MarcaAuto request,
+            CancellationToken cancellationToken
+        )
         {
             _context.MarcaAuto.Add(request);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return request;
         }
