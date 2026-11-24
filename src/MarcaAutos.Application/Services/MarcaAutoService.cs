@@ -15,5 +15,10 @@ namespace MarcaAutos.Application.Services
         {
             return await _repository.GetAllAsync();
         }
+
+        public async Task<MarcaAuto> CrearMarcaAutoAsync(MarcaAuto request)
+        {
+            return await _repository.CreateAsync(request);
+        }
     }
 }

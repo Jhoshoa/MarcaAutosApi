@@ -18,5 +18,13 @@ namespace MarcaAutos.Infrastructure.Repositories
         {
             return await _context.MarcaAuto.AsNoTracking().ToListAsync();
         }
+
+        public async Task<MarcaAuto> CreateAsync(MarcaAuto request)
+        {
+            _context.MarcaAuto.Add(request);
+            await _context.SaveChangesAsync();
+
+            return request;
+        }
     }
 }

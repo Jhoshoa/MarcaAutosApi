@@ -1,6 +1,7 @@
 using MarcaAutos.Application.Interfaces;
 using MarcaAutos.Api.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using MarcaAutos.Domain;
 
 namespace MarcaAutos.Api.Controllers
 {
@@ -42,6 +43,26 @@ namespace MarcaAutos.Api.Controllers
                     marca.FoundedYear));
 
             return Ok(response);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<MarcaAutoResponse>> Create([FromBody] CreateMarcaAutoRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var marcaAuto = new MarcaAuto
+            {
+                Name = request.Name,
+                CountryOrigin = request.CountryOrigin,
+                FoundedYear = request.FoundedYear
+            };
+
+            var data = await _marcaAutoService.CrearMarcaAutoAsync(marcaAuto);
+
+            return StatusCode(StatusCodes.Status201Created, data);
         }
     }
 }

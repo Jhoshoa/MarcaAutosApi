@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MarcaAutos.Domain;
 
 namespace MarcaAutos.Application.Interfaces
@@ -9,5 +5,6 @@ namespace MarcaAutos.Application.Interfaces
     public interface IMarcaAutoService
     {
         Task<IEnumerable<MarcaAuto>> ObtenerTodasLasMarcasAsync();
+        Task<MarcaAuto> CrearMarcaAutoAsync(MarcaAuto request);
     }
 }
