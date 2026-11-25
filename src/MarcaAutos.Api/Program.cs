@@ -8,7 +8,6 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        Console.WriteLine("----------------------->" + args[0]);
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>

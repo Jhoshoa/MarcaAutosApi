@@ -85,15 +85,6 @@ namespace MarcaAutos.Api.Controllers
 
             if (result is null)
             {
-                // return Problem(
-                //     statusCode: StatusCodes.Status404NotFound,
-                //     title: "Marca de auto no encontrada",
-                //     detail: $"No se encontró una marca de auto con el ID {id}.",
-                //     instance: HttpContext.Request.Path
-                // );
-
-                //return NotFound($"Not found the marca auto with that {id}.");
-
                 return NotFound();
             }
 
