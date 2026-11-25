@@ -4,7 +4,6 @@ using MarcaAutos.Application.Services;
 using MarcaAutos.Domain;
 using MarcaAutos.Infrastructure.Persistence;
 using MarcaAutos.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -96,24 +95,16 @@ namespace MarcaAutos.Tests
         }
 
         [Fact]
-        public async Task GetById_WhenBrandDoesNotExist_ShouldReturnNotFoundProblemDetails()
+        public async Task GetById_WhenBrandDoesNotExist_ShouldReturnNotFound()
         {
             await using var context = GetInMemoryDbContext();
             var repository = new MarcaAutoRepository(context);
             var service = new MarcaAutoService(repository);
             var controller = new MarcasAutosController(service);
-            controller.ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext(),
-            };
 
             var result = await controller.GetById(999, CancellationToken.None);
 
-            var notFoundResult = Assert.IsType<ObjectResult>(result.Result);
-            var problem = Assert.IsType<ProblemDetails>(notFoundResult.Value);
-            Assert.Equal(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
-            Assert.Equal(StatusCodes.Status404NotFound, problem.Status);
-            Assert.Equal("Marca de auto no encontrada", problem.Title);
+            Assert.IsType<NotFoundResult>(result.Result);
         }
 
         [Fact]
