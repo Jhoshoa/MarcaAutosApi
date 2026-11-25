@@ -1,11 +1,12 @@
-using MarcaAutos.Application.Interfaces;
 using MarcaAutos.Api.Dtos;
+using MarcaAutos.Application.Interfaces;
+using MarcaAutos.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarcaAutos.Api.Controllers
 {
     /// <summary>
-    /// Provides read-only operations for vehicle brands.
+    /// Provides operations for vehicle brands.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -19,7 +20,7 @@ namespace MarcaAutos.Api.Controllers
         /// <param name="marcaAutoService">The service used to retrieve vehicle brands.</param>
         public MarcasAutosController(IMarcaAutoService marcaAutoService)
         {
-            _marcaAutoService = marcaAutoService;            
+            _marcaAutoService = marcaAutoService;
         }
 
         /// <summary>
@@ -31,15 +32,68 @@ namespace MarcaAutos.Api.Controllers
         /// <returns>An HTTP 200 response containing the vehicle brands.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<MarcaAutoResponse>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<MarcaAutoResponse>>> GetAll()
+        public async Task<ActionResult<IEnumerable<MarcaAutoResponse>>> GetAll(
+            CancellationToken cancellationToken
+        )
         {
-            var marcasAutos = await _marcaAutoService.ObtenerTodasLasMarcasAsync();
-            var response = marcasAutos
-                .Select(marca => new MarcaAutoResponse(
-                    marca.Id,
-                    marca.Name,
-                    marca.CountryOrigin,
-                    marca.FoundedYear));
+            var marcasAutos = await _marcaAutoService.ObtenerTodasLasMarcasAsync(cancellationToken);
+            var response = marcasAutos.Select(marca => new MarcaAutoResponse(
+                marca.Id,
+                marca.Name,
+                marca.CountryOrigin,
+                marca.FoundedYear
+            ));
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(MarcaAutoResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<MarcaAutoResponse>> Create(
+            [FromBody] CreateMarcaAutoRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            var command = new CreateMarcaAutoCommand(
+                request.Name,
+                request.CountryOrigin,
+                request.FoundedYear
+            );
+            var result = await _marcaAutoService.CrearMarcaAutoAsync(command, cancellationToken);
+
+            var response = new MarcaAutoResponse(
+                result.Id,
+                result.Name,
+                result.CountryOrigin,
+                result.FoundedYear
+            );
+
+            return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(MarcaAutoResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<MarcaAutoResponse>> GetById(
+            int id,
+            CancellationToken cancellationToken
+        )
+        {
+            var result = await _marcaAutoService.ObtenerMarcaAutoPorIdAsync(id, cancellationToken);
+
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            var response = new MarcaAutoResponse(
+                result.Id,
+                result.Name,
+                result.CountryOrigin,
+                result.FoundedYear
+            );
 
             return Ok(response);
         }

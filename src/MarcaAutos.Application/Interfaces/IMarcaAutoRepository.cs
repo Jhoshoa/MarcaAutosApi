@@ -8,6 +8,8 @@ namespace MarcaAutos.Application.Interfaces
 {
     public interface IMarcaAutoRepository
     {
-        Task<IEnumerable<MarcaAuto>> GetAllAsync();
+        Task<IEnumerable<MarcaAuto>> GetAllAsync(CancellationToken cancellationToken);
+        Task<MarcaAuto> CreateAsync(MarcaAuto request, CancellationToken cancellationToken);
+        Task<MarcaAuto?> GetByIdAsync(int id, CancellationToken cancellationToken);
     }
 }
