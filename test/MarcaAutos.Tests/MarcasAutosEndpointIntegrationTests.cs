@@ -5,14 +5,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MarcaAutos.Tests;
 
-public sealed class MarcasAutosEndpointIntegrationTests : IClassFixture<ApiFactory>
+public sealed class MarcasAutosEndpointIntegrationTests : IDisposable
 {
+    private readonly ApiFactory _factory;
     private readonly HttpClient _client;
 
-    public MarcasAutosEndpointIntegrationTests(ApiFactory factory)
+    public MarcasAutosEndpointIntegrationTests()
     {
-        // WebApplicationFactory runs the app's HTTP pipeline in-process using TestServer.
-        _client = factory.CreateClient();
+        _factory = new ApiFactory();
+        _client = _factory.CreateClient();
+        _factory.InitializeDatabase();
+    }
+
+    public void Dispose()
+    {
+        _client.Dispose();
+        _factory.Dispose();
     }
 
     [Fact]
