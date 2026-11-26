@@ -46,6 +46,11 @@ namespace MarcaAutos.Application.Services
             return marcaAuto is null ? null : Map(marcaAuto);
         }
 
+        public async Task BorrarMarcaAutoAsync(int id, CancellationToken cancellationToken)
+        {
+            await _repository.DeleteByIdAsync(id, cancellationToken);
+        }
+
         private static MarcaAutoResult Map(MarcaAuto marcaAuto)
         {
             return new MarcaAutoResult(

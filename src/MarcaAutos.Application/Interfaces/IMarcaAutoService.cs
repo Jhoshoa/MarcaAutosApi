@@ -15,5 +15,6 @@ namespace MarcaAutos.Application.Interfaces
             int id,
             CancellationToken cancellationToken
         );
+        Task BorrarMarcaAutoAsync(int id, CancellationToken cancellationToken);
     }
 }

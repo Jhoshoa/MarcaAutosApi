@@ -97,5 +97,14 @@ namespace MarcaAutos.Api.Controllers
 
             return Ok(response);
         }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult> DeleteById(int id, CancellationToken cancellationToken)
+        {
+            await _marcaAutoService.BorrarMarcaAutoAsync(id, cancellationToken);
+
+            return NoContent();
+        }
     }
 }

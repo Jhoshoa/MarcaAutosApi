@@ -11,5 +11,6 @@ namespace MarcaAutos.Application.Interfaces
         Task<IEnumerable<MarcaAuto>> GetAllAsync(CancellationToken cancellationToken);
         Task<MarcaAuto> CreateAsync(MarcaAuto request, CancellationToken cancellationToken);
         Task<MarcaAuto?> GetByIdAsync(int id, CancellationToken cancellationToken);
+        Task DeleteByIdAsync(int id, CancellationToken cancellationToken);
     }
 }
