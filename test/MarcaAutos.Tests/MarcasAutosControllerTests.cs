@@ -27,9 +27,8 @@ namespace MarcaAutos.Tests
         {
             // Arrange
             await using var context = GetInMemoryDbContext();
-            var repository = new MarcaAutoRepository(context);
-            var service = new MarcaAutoService(repository);
-            var controller = new MarcasAutosController(service);
+
+            var controller = CreateController(context);
 
             // Act
             var result = await controller.GetAll(CancellationToken.None);
@@ -61,9 +60,7 @@ namespace MarcaAutos.Tests
             );
             await context.SaveChangesAsync();
 
-            var repository = new MarcaAutoRepository(context);
-            var service = new MarcaAutoService(repository);
-            var controller = new MarcasAutosController(service);
+            var controller = CreateController(context);
 
             // Act
             var result = await controller.GetAll(CancellationToken.None);
@@ -82,9 +79,8 @@ namespace MarcaAutos.Tests
         public async Task GetById_WhenBrandExists_ShouldReturnOkWithBrandResponse()
         {
             await using var context = GetInMemoryDbContext();
-            var repository = new MarcaAutoRepository(context);
-            var service = new MarcaAutoService(repository);
-            var controller = new MarcasAutosController(service);
+
+            var controller = CreateController(context);
 
             var result = await controller.GetById(1, CancellationToken.None);
 
@@ -98,9 +94,8 @@ namespace MarcaAutos.Tests
         public async Task GetById_WhenBrandDoesNotExist_ShouldReturnNotFound()
         {
             await using var context = GetInMemoryDbContext();
-            var repository = new MarcaAutoRepository(context);
-            var service = new MarcaAutoService(repository);
-            var controller = new MarcasAutosController(service);
+
+            var controller = CreateController(context);
 
             var result = await controller.GetById(999, CancellationToken.None);
 
@@ -111,9 +106,9 @@ namespace MarcaAutos.Tests
         public async Task Create_ShouldReturnCreatedAtGetByIdWithGeneratedId()
         {
             await using var context = GetInMemoryDbContext();
-            var repository = new MarcaAutoRepository(context);
-            var service = new MarcaAutoService(repository);
-            var controller = new MarcasAutosController(service);
+
+            var controller = CreateController(context);
+
             var request = new CreateMarcaAutoRequest
             {
                 Name = "Mazda",
@@ -147,9 +142,7 @@ namespace MarcaAutos.Tests
             context.MarcaAuto.Add(marcaAuto);
             await context.SaveChangesAsync(CancellationToken.None);
 
-            var repository = new MarcaAutoRepository(context);
-            var service = new MarcaAutoService(repository);
-            var controller = new MarcasAutosController(service);
+            var controller = CreateController(context);
 
             // Act
 
@@ -161,6 +154,15 @@ namespace MarcaAutos.Tests
             Assert.IsType<NoContentResult>(result);
 
             Assert.IsType<NotFoundResult>(findMarcaAuto.Result);
+        }
+
+        public MarcasAutosController CreateController(ApplicationDbContext context)
+        {
+            var repository = new MarcaAutoRepository(context);
+            var service = new MarcaAutoService(repository);
+            var controller = new MarcasAutosController(service);
+
+            return controller;
         }
     }
 }
