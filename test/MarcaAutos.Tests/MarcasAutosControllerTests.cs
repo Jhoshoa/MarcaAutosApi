@@ -130,5 +130,37 @@ namespace MarcaAutos.Tests
             Assert.Equal("Mazda", response.Name);
             Assert.NotEqual(0, response.Id);
         }
+
+        [Fact]
+        public async Task Delete_WhenMarcaExists_ShouldDeleteAndReturnNoContent()
+        {
+            // Arrange
+            await using var context = GetInMemoryDbContext();
+            var marcaAuto = new MarcaAuto
+            {
+                Id = 123,
+                Name = "Xiami",
+                CountryOrigin = "China",
+                FoundedYear = 1999,
+            };
+
+            context.MarcaAuto.Add(marcaAuto);
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            var repository = new MarcaAutoRepository(context);
+            var service = new MarcaAutoService(repository);
+            var controller = new MarcasAutosController(service);
+
+            // Act
+
+            var result = await controller.DeleteById(marcaAuto.Id, CancellationToken.None);
+
+            var findMarcaAuto = await controller.GetById(marcaAuto.Id, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<NoContentResult>(result);
+
+            Assert.IsType<NotFoundResult>(findMarcaAuto.Result);
+        }
     }
 }

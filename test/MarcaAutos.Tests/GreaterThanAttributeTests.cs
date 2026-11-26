@@ -12,7 +12,7 @@ public sealed class GreaterThanAttributeTests
     [InlineData("1901", false)]
     public void IsValid_ReturnsExpectedResult(object? value, bool expected)
     {
-        // Act
+        // Arrange
         var attribute = new GreaterThanAttribute(1900);
 
         // Act

@@ -73,4 +73,29 @@ public sealed class MarcasAutosEndpointIntegrationTests : IClassFixture<ApiFacto
         Assert.NotNull(problem);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Delete_WhenIdIdNotExist_ShouldReturnNoContent()
+    {
+        // Act
+        using var response = await _client.DeleteAsync("api/MarcasAutos/945");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Delete_WhenIdIdIsIncorrect_ShouldReturnBadRequest()
+    {
+        // Act
+        using var response = await _client.DeleteAsync("api/MarcasAutos/abcd");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+
+        Assert.NotNull(problem);
+        Assert.Equal((int)HttpStatusCode.BadRequest, problem.Status);
+    }
 }
