@@ -111,11 +111,11 @@ namespace MarcaAutos.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<MarcaAutoResponse>> Edit(
             int id,
-            [FromBody] CreateMarcaAutoRequest data,
+            [FromBody] UpdateMarcaAutoRequest data,
             CancellationToken cancellationToken
         )
         {
-            var marcaAuto = new CreateMarcaAutoCommand(
+            var marcaAuto = new UpdateMarcaAutoCommand(
                 data.Name,
                 data.CountryOrigin,
                 data.FoundedYear

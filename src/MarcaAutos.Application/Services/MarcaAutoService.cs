@@ -54,7 +54,7 @@ namespace MarcaAutos.Application.Services
 
         public async Task<MarcaAutoResult?> EditarMarcaAutoAsync(
             int id,
-            CreateMarcaAutoCommand data,
+            UpdateMarcaAutoCommand data,
             CancellationToken cancellationToken
         )
         {
