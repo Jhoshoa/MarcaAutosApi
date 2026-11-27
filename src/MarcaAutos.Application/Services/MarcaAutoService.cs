@@ -1,3 +1,4 @@
+using System.Formats.Asn1;
 using MarcaAutos.Application.Interfaces;
 using MarcaAutos.Application.Models;
 using MarcaAutos.Domain;
@@ -49,6 +50,24 @@ namespace MarcaAutos.Application.Services
         public async Task BorrarMarcaAutoAsync(int id, CancellationToken cancellationToken)
         {
             await _repository.DeleteByIdAsync(id, cancellationToken);
+        }
+
+        public async Task<MarcaAutoResult?> EditarMarcaAutoAsync(
+            int id,
+            CreateMarcaAutoCommand data,
+            CancellationToken cancellationToken
+        )
+        {
+            var editMarcaAuto = new MarcaAuto
+            {
+                Name = data.Name,
+                CountryOrigin = data.CountryOrigin,
+                FoundedYear = data.FoundedYear,
+            };
+
+            var result = await _repository.EditAsync(id, editMarcaAuto, cancellationToken);
+
+            return result is null ? null : Map(result);
         }
 
         private static MarcaAutoResult Map(MarcaAuto marcaAuto)
