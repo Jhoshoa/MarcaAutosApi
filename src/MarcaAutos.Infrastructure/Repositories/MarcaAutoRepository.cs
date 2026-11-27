@@ -36,5 +36,43 @@ namespace MarcaAutos.Infrastructure.Repositories
                 .MarcaAuto.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
+
+        public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            //var marcaAuto = await GetByIdAsync(id, cancellationToken);
+            var marcaAuto = await _context.MarcaAuto.FirstOrDefaultAsync(
+                x => x.Id == id,
+                cancellationToken
+            );
+
+            if (marcaAuto is not null)
+            {
+                _context.MarcaAuto.Remove(marcaAuto);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+
+        public async Task<MarcaAuto?> EditAsync(
+            int id,
+            MarcaAuto data,
+            CancellationToken cancellationToken
+        )
+        {
+            var marcaAuto = await _context.MarcaAuto.FirstOrDefaultAsync(
+                x => x.Id == id,
+                cancellationToken
+            );
+
+            if (marcaAuto is not null)
+            {
+                marcaAuto.Name = data.Name;
+                marcaAuto.CountryOrigin = data.CountryOrigin;
+                marcaAuto.FoundedYear = data.FoundedYear;
+
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+
+            return marcaAuto;
+        }
     }
 }

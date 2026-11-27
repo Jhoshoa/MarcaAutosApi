@@ -97,5 +97,49 @@ namespace MarcaAutos.Api.Controllers
 
             return Ok(response);
         }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult> DeleteById(int id, CancellationToken cancellationToken)
+        {
+            await _marcaAutoService.BorrarMarcaAutoAsync(id, cancellationToken);
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<ActionResult<MarcaAutoResponse>> Edit(
+            int id,
+            [FromBody] UpdateMarcaAutoRequest data,
+            CancellationToken cancellationToken
+        )
+        {
+            var marcaAuto = new UpdateMarcaAutoCommand(
+                data.Name,
+                data.CountryOrigin,
+                data.FoundedYear
+            );
+
+            var result = await _marcaAutoService.EditarMarcaAutoAsync(
+                id,
+                marcaAuto,
+                cancellationToken
+            );
+
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            var response = new MarcaAutoResponse(
+                result.Id,
+                result.Name,
+                result.CountryOrigin,
+                result.FoundedYear
+            );
+
+            return Ok(response);
+        }
     }
 }

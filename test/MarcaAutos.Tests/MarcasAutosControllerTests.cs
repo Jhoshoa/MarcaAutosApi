@@ -27,9 +27,8 @@ namespace MarcaAutos.Tests
         {
             // Arrange
             await using var context = GetInMemoryDbContext();
-            var repository = new MarcaAutoRepository(context);
-            var service = new MarcaAutoService(repository);
-            var controller = new MarcasAutosController(service);
+
+            var controller = CreateController(context);
 
             // Act
             var result = await controller.GetAll(CancellationToken.None);
@@ -61,9 +60,7 @@ namespace MarcaAutos.Tests
             );
             await context.SaveChangesAsync();
 
-            var repository = new MarcaAutoRepository(context);
-            var service = new MarcaAutoService(repository);
-            var controller = new MarcasAutosController(service);
+            var controller = CreateController(context);
 
             // Act
             var result = await controller.GetAll(CancellationToken.None);
@@ -82,9 +79,8 @@ namespace MarcaAutos.Tests
         public async Task GetById_WhenBrandExists_ShouldReturnOkWithBrandResponse()
         {
             await using var context = GetInMemoryDbContext();
-            var repository = new MarcaAutoRepository(context);
-            var service = new MarcaAutoService(repository);
-            var controller = new MarcasAutosController(service);
+
+            var controller = CreateController(context);
 
             var result = await controller.GetById(1, CancellationToken.None);
 
@@ -98,9 +94,8 @@ namespace MarcaAutos.Tests
         public async Task GetById_WhenBrandDoesNotExist_ShouldReturnNotFound()
         {
             await using var context = GetInMemoryDbContext();
-            var repository = new MarcaAutoRepository(context);
-            var service = new MarcaAutoService(repository);
-            var controller = new MarcasAutosController(service);
+
+            var controller = CreateController(context);
 
             var result = await controller.GetById(999, CancellationToken.None);
 
@@ -111,9 +106,9 @@ namespace MarcaAutos.Tests
         public async Task Create_ShouldReturnCreatedAtGetByIdWithGeneratedId()
         {
             await using var context = GetInMemoryDbContext();
-            var repository = new MarcaAutoRepository(context);
-            var service = new MarcaAutoService(repository);
-            var controller = new MarcasAutosController(service);
+
+            var controller = CreateController(context);
+
             var request = new CreateMarcaAutoRequest
             {
                 Name = "Mazda",
@@ -129,6 +124,45 @@ namespace MarcaAutos.Tests
             Assert.Equal(response.Id, createdResult.RouteValues!["id"]);
             Assert.Equal("Mazda", response.Name);
             Assert.NotEqual(0, response.Id);
+        }
+
+        [Fact]
+        public async Task Delete_WhenMarcaExists_ShouldDeleteAndReturnNoContent()
+        {
+            // Arrange
+            await using var context = GetInMemoryDbContext();
+            var marcaAuto = new MarcaAuto
+            {
+                Id = 123,
+                Name = "Xiami",
+                CountryOrigin = "China",
+                FoundedYear = 1999,
+            };
+
+            context.MarcaAuto.Add(marcaAuto);
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            var controller = CreateController(context);
+
+            // Act
+
+            var result = await controller.DeleteById(marcaAuto.Id, CancellationToken.None);
+
+            var findMarcaAuto = await controller.GetById(marcaAuto.Id, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<NoContentResult>(result);
+
+            Assert.IsType<NotFoundResult>(findMarcaAuto.Result);
+        }
+
+        public MarcasAutosController CreateController(ApplicationDbContext context)
+        {
+            var repository = new MarcaAutoRepository(context);
+            var service = new MarcaAutoService(repository);
+            var controller = new MarcasAutosController(service);
+
+            return controller;
         }
     }
 }
