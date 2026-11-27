@@ -83,6 +83,71 @@ public sealed class MarcasAutosEndpointIntegrationTests : IDisposable
     }
 
     [Fact]
+    public async Task Edit_WhenBrandExists_ShouldReturnUpdatedBrand()
+    {
+        var requestBody = new UpdateMarcaAutoRequest
+        {
+            Name = "Toyota Updated",
+            CountryOrigin = "Japan",
+            FoundedYear = 1937,
+        };
+
+        using var response = await _client.PutAsJsonAsync("/api/MarcasAutos/1", requestBody);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var updatedBrand = await response.Content.ReadFromJsonAsync<MarcaAutoResponse>();
+
+        Assert.NotNull(updatedBrand);
+        Assert.Equal(1, updatedBrand.Id);
+        Assert.Equal(requestBody.Name, updatedBrand.Name);
+        Assert.Equal(requestBody.CountryOrigin, updatedBrand.CountryOrigin);
+        Assert.Equal(requestBody.FoundedYear, updatedBrand.FoundedYear);
+
+        using var getResponse = await _client.GetAsync("/api/MarcasAutos/1");
+        var persistedBrand = await getResponse.Content.ReadFromJsonAsync<MarcaAutoResponse>();
+
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+        Assert.NotNull(persistedBrand);
+        Assert.Equal(requestBody.Name, persistedBrand.Name);
+    }
+
+    [Fact]
+    public async Task Edit_WhenBrandDoesNotExist_ShouldReturnNotFound()
+    {
+        var requestBody = new UpdateMarcaAutoRequest
+        {
+            Name = "Nonexistent",
+            CountryOrigin = "Nowhere",
+            FoundedYear = 2000,
+        };
+
+        using var response = await _client.PutAsJsonAsync("/api/MarcasAutos/999", requestBody);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Edit_WhenRequestFailsValidation_ShouldReturnBadRequest()
+    {
+        var requestBody = new UpdateMarcaAutoRequest
+        {
+            Name = "Toyota",
+            CountryOrigin = "Japan",
+            FoundedYear = 1800,
+        };
+
+        using var response = await _client.PutAsJsonAsync("/api/MarcasAutos/1", requestBody);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+
+        Assert.NotNull(problem);
+        Assert.Equal((int)HttpStatusCode.BadRequest, problem.Status);
+    }
+
+    [Fact]
     public async Task Delete_WhenIdIdNotExist_ShouldReturnNoContent()
     {
         // Act
